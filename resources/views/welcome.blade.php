@@ -1,95 +1,161 @@
 <!doctype html>
 <html lang="{{ app()->getLocale() }}">
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Content Type Meta tag -->
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-        <title>Laravel</title>
+        <!--Responsive Viewport Meta tag-->
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
 
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Raleway', sans-serif;
-                font-weight: 100;
-                height: 100vh;
-                margin: 0;
-            }
+        <title>Todo list app</title>
 
-            .full-height {
-                height: 100vh;
-            }
+        <!-- Roboto font embed -->
+        <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
 
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
+        <!-- Stylesheets -->
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/reset.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/style.css') }}">
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-                        <a href="{{ route('register') }}">Register</a>
-                    @endauth
-                </div>
+
+    <header>
+        <form method="POST" action="{{ Route('todo.store') }}">
+            @csrf
+        <input type="text" placeholder="Enter an activity.." name="job">
+        <button id="add">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve"><g><path class="fill" d="M16,8c0,0.5-0.5,1-1,1H9v6c0,0.5-0.5,1-1,1s-1-0.5-1-1V9H1C0.5,9,0,8.5,0,8s0.5-1,1-1h6V1c0-0.5,0.5-1,1-1s1,0.5,1,1v6h6C15.5,7,16,7.5,16,8z"/></g></svg>
+        </button>
+        </form>
+    </header>
+    <div class="container">
+        @if(!empty($todo['doing']))
+            <ul class="todo" id="todo">
+                @foreach($todo['doing'] as $item)
+                    <li>{{ $item->job }}
+                        <div class="buttons">
+                            <form method="post" action="{{ Route('todo.destroy', $item->id) }}">
+                                <input name="_method" type="hidden" value="DELETE">
+                                @csrf
+                                <button class="remove">
+                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 22 22"
+                                         style="enable-background:new 0 0 22 22;" xml:space="preserve"><rect
+                                                class="noFill"
+                                                width="22"
+                                                height="22"></rect>
+                                        <g>
+                                            <g>
+                                                <path class="fill"
+                                                      d="M16.1,3.6h-1.9V3.3c0-1.3-1-2.3-2.3-2.3h-1.7C8.9,1,7.8,2,7.8,3.3v0.2H5.9c-1.3,0-2.3,1-2.3,2.3v1.3c0,0.5,0.4,0.9,0.9,1v10.5c0,1.3,1,2.3,2.3,2.3h8.5c1.3,0,2.3-1,2.3-2.3V8.2c0.5-0.1,0.9-0.5,0.9-1V5.9C18.4,4.6,17.4,3.6,16.1,3.6z M9.1,3.3c0-0.6,0.5-1.1,1.1-1.1h1.7c0.6,0,1.1,0.5,1.1,1.1v0.2H9.1V3.3z M16.3,18.7c0,0.6-0.5,1.1-1.1,1.1H6.7c-0.6,0-1.1-0.5-1.1-1.1V8.2h10.6V18.7z M17.2,7H4.8V5.9c0-0.6,0.5-1.1,1.1-1.1h10.2c0.6,0,1.1,0.5,1.1,1.1V7z"></path>
+                                            </g>
+                                            <g>
+                                                <g>
+                                                    <path class="fill"
+                                                          d="M11,18c-0.4,0-0.6-0.3-0.6-0.6v-6.8c0-0.4,0.3-0.6,0.6-0.6s0.6,0.3,0.6,0.6v6.8C11.6,17.7,11.4,18,11,18z"></path>
+                                                </g>
+                                                <g>
+                                                    <path class="fill"
+                                                          d="M8,18c-0.4,0-0.6-0.3-0.6-0.6v-6.8c0-0.4,0.3-0.6,0.6-0.6c0.4,0,0.6,0.3,0.6,0.6v6.8C8.7,17.7,8.4,18,8,18z"></path>
+                                                </g>
+                                                <g>
+                                                    <path class="fill"
+                                                          d="M14,18c-0.4,0-0.6-0.3-0.6-0.6v-6.8c0-0.4,0.3-0.6,0.6-0.6c0.4,0,0.6,0.3,0.6,0.6v6.8C14.6,17.7,14.3,18,14,18z"></path>
+                                                </g>
+                                            </g>
+                                        </g></svg>
+                                </button>
+                            </form>
+
+                            <form method="post" action="{{ Route('todo.update', $item->id) }}">
+                                <input name="_method" type="hidden" value="PUT">
+                                @csrf
+                                <input type="text" name="status" value="completed" hidden>
+                                <button type="submit" class="complete">
+                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 22 22"
+                                         style="enable-background:new 0 0 22 22;" xml:space="preserve"><rect y="0"
+                                                                                                             class="noFill"
+                                                                                                             width="22"
+                                                                                                             height="22"></rect>
+                                        <g>
+                                            <path class="fill"
+                                                  d="M9.7,14.4L9.7,14.4c-0.2,0-0.4-0.1-0.5-0.2l-2.7-2.7c-0.3-0.3-0.3-0.8,0-1.1s0.8-0.3,1.1,0l2.1,2.1l4.8-4.8c0.3-0.3,0.8-0.3,1.1,0s0.3,0.8,0,1.1l-5.3,5.3C10.1,14.3,9.9,14.4,9.7,14.4z"></path>
+                                        </g></svg>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @else
+            <ul class="todo" id="todo"></ul>
+        @endif
+
+        @if(!empty($todo['completed']))
+                <ul class="todo" id="completed">
+                    @foreach($todo['completed'] as $item)
+                        <li>{{ $item->job }}
+                            <div class="buttons">
+                                <form method="post" action="{{ Route('todo.destroy', $item->id) }}">
+                                    <input name="_method" type="hidden" value="DELETE">
+                                    @csrf
+                                    <button class="remove">
+                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                             viewBox="0 0 22 22"
+                                             style="enable-background:new 0 0 22 22;" xml:space="preserve"><rect
+                                                    class="noFill"
+                                                    width="22"
+                                                    height="22"></rect>
+                                            <g>
+                                                <g>
+                                                    <path class="fill"
+                                                          d="M16.1,3.6h-1.9V3.3c0-1.3-1-2.3-2.3-2.3h-1.7C8.9,1,7.8,2,7.8,3.3v0.2H5.9c-1.3,0-2.3,1-2.3,2.3v1.3c0,0.5,0.4,0.9,0.9,1v10.5c0,1.3,1,2.3,2.3,2.3h8.5c1.3,0,2.3-1,2.3-2.3V8.2c0.5-0.1,0.9-0.5,0.9-1V5.9C18.4,4.6,17.4,3.6,16.1,3.6z M9.1,3.3c0-0.6,0.5-1.1,1.1-1.1h1.7c0.6,0,1.1,0.5,1.1,1.1v0.2H9.1V3.3z M16.3,18.7c0,0.6-0.5,1.1-1.1,1.1H6.7c-0.6,0-1.1-0.5-1.1-1.1V8.2h10.6V18.7z M17.2,7H4.8V5.9c0-0.6,0.5-1.1,1.1-1.1h10.2c0.6,0,1.1,0.5,1.1,1.1V7z"></path>
+                                                </g>
+                                                <g>
+                                                    <g>
+                                                        <path class="fill"
+                                                              d="M11,18c-0.4,0-0.6-0.3-0.6-0.6v-6.8c0-0.4,0.3-0.6,0.6-0.6s0.6,0.3,0.6,0.6v6.8C11.6,17.7,11.4,18,11,18z"></path>
+                                                    </g>
+                                                    <g>
+                                                        <path class="fill"
+                                                              d="M8,18c-0.4,0-0.6-0.3-0.6-0.6v-6.8c0-0.4,0.3-0.6,0.6-0.6c0.4,0,0.6,0.3,0.6,0.6v6.8C8.7,17.7,8.4,18,8,18z"></path>
+                                                    </g>
+                                                    <g>
+                                                        <path class="fill"
+                                                              d="M14,18c-0.4,0-0.6-0.3-0.6-0.6v-6.8c0-0.4,0.3-0.6,0.6-0.6c0.4,0,0.6,0.3,0.6,0.6v6.8C14.6,17.7,14.3,18,14,18z"></path>
+                                                    </g>
+                                                </g>
+                                            </g></svg>
+                                    </button>
+                                </form>
+                                <form method="post" action="{{ Route('todo.update', $item->id) }}">
+                                    <input name="_method" type="hidden" value="PUT">
+                                    @csrf
+                                    <input type="text" name="status" value="doing" hidden>
+                                <button class="complete">
+                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 22 22"
+                                         style="enable-background:new 0 0 22 22;" xml:space="preserve"><rect y="0"
+                                                                                                             class="noFill"
+                                                                                                             width="22"
+                                                                                                             height="22"></rect>
+                                        <g>
+                                            <path class="fill"
+                                                  d="M9.7,14.4L9.7,14.4c-0.2,0-0.4-0.1-0.5-0.2l-2.7-2.7c-0.3-0.3-0.3-0.8,0-1.1s0.8-0.3,1.1,0l2.1,2.1l4.8-4.8c0.3-0.3,0.8-0.3,1.1,0s0.3,0.8,0,1.1l-5.3,5.3C10.1,14.3,9.9,14.4,9.7,14.4z"></path>
+                                        </g></svg>
+                                </button>
+                                </form>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <ul class="todo" id="completed"></ul>
             @endif
 
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
-                </div>
-
-                <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
-            </div>
-        </div>
+    </div>
     </body>
 </html>
